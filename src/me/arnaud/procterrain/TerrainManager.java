@@ -7,6 +7,7 @@ import com.jme3.scene.Node;
 public class TerrainManager {
     
     VoxelManager voxels;
+    DataManager data;
     ChunkManager chunks;
     public Node node;
     public Material mat;
@@ -19,6 +20,7 @@ public class TerrainManager {
         noise = new PerlinNoise(123);
         voxels = new VoxelManager(this);
         chunks = new ChunkManager(this);
+        data = new DataManager(this);
     }
     
     public Chunk GetChunk (int x, int y, int z) {
