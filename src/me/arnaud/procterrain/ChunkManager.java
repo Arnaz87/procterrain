@@ -11,8 +11,8 @@ class ChunkManager {
     HashMap<Coord, Integer> resolutions = new HashMap<Coord, Integer>();
     TerrainManager terrain;
     int minRes = 0;
-    int maxRes = 3;
-    public int farcount = 4;
+    int maxRes = 1;
+    public int farcount = 0;
     boolean debugb = false;
     
     public ChunkManager(TerrainManager in) {

@@ -12,7 +12,7 @@ public class TerrainManager {
     public Node node;
     public Material mat;
     public PerlinNoise noise;
-    public int maxRes = 4;
+    public int maxRes = 3;
     public int farcount = 5;
     public boolean debugb = false;
     
