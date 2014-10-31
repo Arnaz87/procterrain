@@ -68,7 +68,7 @@ class ChunkManager {
             chunk.DebugBox();
             return chunk;
         }
-        chunk.CreateVoxels();
+        //chunk.CreateVoxels();
   //      chunk.MarchCubes();
   //      //chunk.CalculateNormals();
   //      chunk.CalculateFacetsNormals();

@@ -19,7 +19,7 @@ public class MarchingCubes {
         
         //int l1 = voxels.length-2, l2 = voxels[0].length-2, l3 = voxels[0][0].length-2;
         //int l = voxels.size() - 2;
-        int l = 15; //14 --  15
+        int l = 16; //14 --  15
         int l2 = 0; //2 --- -1
         
         /* El chunk tiene naturalmente l = 15; l2 = 0;

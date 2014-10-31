@@ -12,7 +12,7 @@ public class ChunkInfo {
     public ChunkInfo() {
         bytes = new short[4680];
         for (int i = 0; i < 8; i++) {
-            bytes[i] = -1;
+            //bytes[i] = -1;
         }
         fe = 8;
         ma = new ModifiableArray(4680);
@@ -39,7 +39,11 @@ public class ChunkInfo {
         int pos = global + local;
         short val = bytes[pos];
         if (val < 0) {
-            return ReadAt(-val, biglocal >> 4);
+            try {
+                return ReadAt(-val, biglocal >> 4);
+            } catch (java.lang.StackOverflowError e) {
+                throw new RuntimeException("Muchos Reads, val:"+val+ ", global:"+global+", biglocal:"+biglocal);
+            }
         }
         return val;
     }

@@ -37,6 +37,12 @@ public class TerrainManager {
     public byte GetBVoxel (float x, float y, float z) {
         return voxels.GetBVoxel(x, y, z);
     }
+    public byte GetBVoxel (Coord in) {
+        return voxels.GetBVoxel(in.x, in.y, in.z);
+    }
+    public byte GetDVoxel (Coord in) {
+        return data.GetVoxelAt(in);
+    }
     public int GetColor(float x, float y, float z) {
         return voxels.GetColor(x, y, z);
     }

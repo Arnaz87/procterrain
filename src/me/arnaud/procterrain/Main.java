@@ -28,7 +28,7 @@ public class Main extends SimpleApplication implements ActionListener {
     Geometry geom;
     DirectionalLight sun;
     TerrainManager terrain = new TerrainManager();
-    boolean realmat = true;
+    boolean realmat = false;
     Coord before = new Coord(0,0,0);
     
     private FilterPostProcessor fpp;

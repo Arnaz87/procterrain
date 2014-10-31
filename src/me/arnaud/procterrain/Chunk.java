@@ -51,6 +51,7 @@ public class Chunk {
         cinfo.res = resolution;
         b_voxels = new ByteArray3(ns);
         m_colors = new int[ns][ns][ns];
+        
         for (int a = 0; a < ns; a++) {
             for (int b = 0; b < ns; b++) {
                 for (int c = 0; c < ns; c++) {
@@ -90,12 +91,9 @@ public class Chunk {
     }
     
     public short GetVoxel(Coord pos) {
-        if (!pos.InRange(0, 15)) {
-            Coord xpos = cindex.ShiftLeft(4).Add(pos.Mult(res));
-            return terrain.chunks.GetVoxel(xpos);
-        } else {
-            return cinfo.Get(pos);
-        }
+        Coord gp = pos.Mult(res).Add(cindex.Mult(size));
+        //Coord gp = cindex.Mult(size).Add(pos.ShiftLeft(res));
+        return terrain.GetDVoxel(gp);
     }
     
     public void SetResolution (int in) {
