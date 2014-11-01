@@ -25,6 +25,7 @@ class Region {
         ChunkInfo chunk = chunks[index];
         if (chunk == null) {
             chunk = new ChunkInfo();
+            chunk.res = 0;
             GenerateChunk(chunk, pos, 0);
             chunks[index] = chunk;
         }
@@ -32,17 +33,18 @@ class Region {
     }
 
     private void GenerateChunk(ChunkInfo chunk, Coord pos, int res) {
-        int num = 16 >> res;
+        int num = 1 << res;
+        //System.out.println(num);
         Coord npos,
             localPos,
             chunkPos = pos.ShiftLeft(4),
             regionLevel,
             worldLevel;
         byte val;
-        for (int a = 0; a < num; a++) {
-            for (int b = 0; b < num; b++) {
-                for (int c = 0; c < num; c++) {
-                    localPos = new Coord(a, b, c).ShiftLeft(res);
+        for (int a = 0; a < 16; a += num) {
+            for (int b = 0; b < 16; b += num) {
+                for (int c = 0; c < 16; c += num) {
+                    localPos = new Coord(a, b, c);
                     regionLevel = chunkPos.Add(localPos);
                     worldLevel = worldPosition.Add(regionLevel);
                     val = terrain.GetBVoxel(worldLevel);

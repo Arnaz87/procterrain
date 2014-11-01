@@ -3,7 +3,7 @@ package me.arnaud.procterrain;
 
 public class ChunkInfo {
     private short[] bytes;
-    public int res;
+    public int res = 0;
     int fe;     //First Empty byte in the array
     private ByteArray3 rawBytes;
     ModifiableArray ma;
@@ -21,29 +21,36 @@ public class ChunkInfo {
     
     public byte Get (Coord pos) {
         if (!pos.InRange(0, 15)) throw new IndexOutOfBoundsException("Coord values must be between 0 and 15: " + pos);
-        int local = ToFullIndex(pos);
-        short val = ReadAt(0, local);
+        int local = ToFullIndex(pos);  //Convierte a posicion en un conjunto de posiciones locales del octree
+        short val = ReadAt(0, local, 2);
         if (val < 0) throw new RuntimeException("Negative value: " + val + ", at: " + pos);
         return (byte)val;
     }
     public int ToFullIndex (Coord in) {
+        
         int val = 0;
         val |= in.ShiftRight(3).ToIndex(2);
         val |= in.ShiftRight(2).And(1).ToIndex(2) << 4;
         val |= in.ShiftRight(1).And(1).ToIndex(2) << 8;
         val |= in.And(1).ToIndex(2) << 12;
         return val;
+        
     }
-    public short ReadAt (int global, int biglocal) {
+    /*
+     * Global es la posición del nodo actual en los bytes.
+     * bigLocal es el conjunto de possiciones locales.
+     * 
+     */
+    public short ReadAt (int global, int biglocal, int level) {
         int local = biglocal & 15;
         int pos = global + local;
         short val = bytes[pos];
+        if (level < res) {
+            //La profundidad supero la resolucion del chunk.
+            return 0;
+        }
         if (val < 0) {
-            try {
-                return ReadAt(-val, biglocal >> 4);
-            } catch (java.lang.StackOverflowError e) {
-                throw new RuntimeException("Muchos Reads, val:"+val+ ", global:"+global+", biglocal:"+biglocal);
-            }
+            return ReadAt(-val, biglocal >> 4, level - 1);
         }
         return val;
     }
@@ -72,13 +79,13 @@ public class ChunkInfo {
         WriteAt(0, local, value, 3);
     }
     
-    public void WriteAt (int global, int biglocal, short value, int res) {
+    public void WriteAt (int global, int biglocal, short value, int level) {
         value = value < 0 ? (short)-value : value;
         int local = biglocal & 7;
         int pos = global + local;
         short val = bytes[pos];
         if (val == value) return;
-        if (res == 0 || val == -1) {
+        if (level <= res || val == -1) {
             bytes[pos] = value;
             return;
         }
@@ -89,9 +96,9 @@ public class ChunkInfo {
             }
             int np = fe;
             fe += 8;
-            WriteAt(np, biglocal >> 4, value, res-1);
+            WriteAt(np, biglocal >> 4, value, level-1);
         } else {
-            WriteAt(-val, biglocal >> 4, value, res-1);
+            WriteAt(-val, biglocal >> 4, value, level-1);
         }
     }
     
