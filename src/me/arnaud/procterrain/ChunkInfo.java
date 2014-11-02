@@ -10,20 +10,27 @@ public class ChunkInfo {
     String topr = null;
     
     public ChunkInfo() {
-        bytes = new short[4680];
-        for (int i = 0; i < 8; i++) {
-            //bytes[i] = -1;
-        }
         fe = 8;
         ma = new ModifiableArray(4680);
         ma.SetFirstEmpty(8);
     }
     
+    public void CreateShortArray (int res) {
+        int totalSize = 0;
+        int actShift = 1;
+        for (int i = 0; i < 4 - res; i++) {
+            actShift <<= 3;
+            totalSize += actShift;
+        }
+        bytes = new short[totalSize];
+        fe = 8;
+    }
+    
     public byte Get (Coord pos) {
         if (!pos.InRange(0, 15)) throw new IndexOutOfBoundsException("Coord values must be between 0 and 15: " + pos);
         int local = ToFullIndex(pos);  //Convierte a posicion en un conjunto de posiciones locales del octree
-        short val = ReadAt(0, local, 2);
-        if (val < 0) throw new RuntimeException("Negative value: " + val + ", at: " + pos);
+        short val = ReadAt(0, local, 4);
+        //if (val < 0) throw new RuntimeException("Negative value: " + val + ", at: " + pos);
         return (byte)val;
     }
     public int ToFullIndex (Coord in) {
@@ -42,13 +49,13 @@ public class ChunkInfo {
      * 
      */
     public short ReadAt (int global, int biglocal, int level) {
+        if (level < res) {
+            //La profundidad supero la resolucion del chunk.
+            return -1;
+        }
         int local = biglocal & 15;
         int pos = global + local;
         short val = bytes[pos];
-        if (level < res) {
-            //La profundidad supero la resolucion del chunk.
-            return 0;
-        }
         if (val < 0) {
             return ReadAt(-val, biglocal >> 4, level - 1);
         }
@@ -149,6 +156,29 @@ public class ChunkInfo {
             st += bytes[i] + ", ";
         }
         System.out.println(st);
+    }
+    
+    //Compress solo junta los nodos iguales, no comprime nada en realidad
+    //O sea, descarta información redundante, pero no la elimina, gastando espacio innecesario.
+    
+    public void Compress () {
+        for (int i = 0; i < 8; i++) {
+            CompressNode(i);
+        }
+    }
+    
+    private short CompressNode (int pos) {
+        short val = bytes[pos];
+        if (val >= 0) return val;
+        short[] vals = new short[8];
+        for (int i = 0; i < 8; i++) {
+            vals[i] = CompressNode(-val + i);
+        }
+        if (EqualArray(vals) && vals[0] != -1) {
+            bytes[pos] = vals[0];
+            return vals[0];
+        }
+        return -1;
     }
     
     public class ModifiableArray {

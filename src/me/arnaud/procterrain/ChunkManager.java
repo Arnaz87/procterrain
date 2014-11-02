@@ -11,7 +11,7 @@ class ChunkManager {
     HashMap<Coord, Integer> resolutions = new HashMap<Coord, Integer>();
     TerrainManager terrain;
     int minRes = 0;
-    int maxRes = 1;
+    int maxRes = 3;
     public int farcount = 0;
     boolean debugb = false;
     
@@ -68,6 +68,7 @@ class ChunkManager {
             chunk.DebugBox();
             return chunk;
         }
+        terrain.data.EnsureChunkAt(chunk.cindex.Mult(chunk.size), res);
         //chunk.CreateVoxels();
   //      chunk.MarchCubes();
   //      //chunk.CalculateNormals();

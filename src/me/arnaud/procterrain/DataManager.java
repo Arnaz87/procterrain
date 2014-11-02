@@ -28,6 +28,11 @@ class DataManager {
         return region;
     }
     
+    public void EnsureChunkAt (Coord pos, int res) {
+        Region region = GetRegionAt(pos);
+        region.EnsureChunkAt(pos.And(0x7f), res);
+    }
+    
     public ChunkInfo GetChunkAt (Coord pos) {
         Region region = GetRegionAt(pos);
         return region.GetChunkAt(pos.And(0x7f));
